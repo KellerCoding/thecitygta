@@ -1,0 +1,48 @@
+================================================================
+======== txAdmin v8.0.1 atop fxserver 15315 Starting - 5/21/2025, 1:03:53 PM
+================================================================
+[13:05:06][fuckthree6] created admins file
+[13:06:22][fuckthree6] Config changes: general.serverName
+[13:06:22][fuckthree6] Changing global settings via setup stepper and started Deployer.
+[13:06:27][fuckthree6] Setting recipe.
+[13:07:19][fuckthree6] Running recipe.
+[13:10:04][fuckthree6] Config changes: server.dataPath
+[13:10:04][fuckthree6] Completed and committed server deploy.
+[15:54:43][fuckthree6] Adding user 'theglurplord'.
+[16:54:35][theglurplord] Changing own password.
+[16:54:56][theglurplord] Changing own identifiers.
+[21:25:26][fuckthree6] [fuckthree6] executed "RESTART SERVER"
+[21:26:17][MONITOR] Restarting server: Server boot timed out (P:45s|HB:--|HC:--).
+[21:33:27][fuckthree6] [fuckthree6] executed "RESTART SERVER"
+[21:34:02][fuckthree6] [fuckthree6] executed "RESTART SERVER"
+[21:52:32][fuckthree6] [fuckthree6] executed "STOP SERVER"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 15315 Starting - 5/21/2025, 9:55:11 PM
+================================================================
+[21:55:34][fuckthree6] logged in from 127.0.0.1 via password
+[22:21:09][fuckthree6] [fuckthree6] executed "STOP SERVER"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 15315 Starting - 5/21/2025, 10:23:32 PM
+================================================================
+[22:23:55][fuckthree6] logged in from 127.0.0.1 via password
+================================================================
+======== txAdmin v8.0.1 atop fxserver 15315 Starting - 5/21/2025, 10:57:41 PM
+================================================================
+[22:58:00][fuckthree6] logged in from 127.0.0.1 via password
+[00:44:35][fuckthree6] [fuckthree6] executed "STOP SERVER"
+[09:49:52][fuckthree6] [fuckthree6] executed "START SERVER"
+[09:59:49][fuckthree6] [fuckthree6] executed "RESTART SERVER"
+[12:56:49][fuckthree6] Set notes for 744570e2fe3ee366b692d9c026ff31345f8815fd
+[13:32:28][fuckthree6] [fuckthree6] executed "RESTART SERVER"
+[13:39:26][fuckthree6] [fuckthree6] executed "RESTART SERVER"
+[14:15:38][fuckthree6] [fuckthree6] executed "RESTART SERVER"
+[20:26:29][fuckthree6] [fuckthree6] executed "STOP SERVER"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 15315 Starting - 5/22/2025, 9:06:52 PM
+================================================================
+[21:07:12][fuckthree6] logged in from 127.0.0.1 via password
+================================================================
+======== txAdmin v8.0.1 atop fxserver 15315 Starting - 5/22/2025, 11:13:06 PM
+================================================================
+[23:13:31][fuckthree6] logged in from 127.0.0.1 via password
+[00:33:50][fuckthree6] [fuckthree6] executed "STOP SERVER"

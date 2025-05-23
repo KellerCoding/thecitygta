@@ -1,0 +1,65 @@
+[
+  {
+    "$schema": 1,
+    "name": "fuckthree6",
+    "master": true,
+    "password_hash": "$2a$11$W2GlrEUG1zIsAY9TwIXsUe.V0tB0.lW1aY/HZGcXk7/NenBkgPWzS",
+    "providers": {
+      "citizenfx": {
+        "id": "fuckthree6",
+        "identifier": "fivem:16923466",
+        "data": {}
+      },
+      "discord": {
+        "id": "558560902488784906",
+        "identifier": "discord:558560902488784906",
+        "data": {}
+      }
+    },
+    "permissions": []
+  },
+  {
+    "$schema": 1,
+    "name": "theglurplord",
+    "master": false,
+    "password_hash": "$2a$11$tbmJF4YIVpCKv3n9y.Mg/ORizYJiaUtja3mzTske8.KSYrMz5U3hu",
+    "providers": {
+      "citizenfx": {
+        "id": "BeyBlade_Lord",
+        "identifier": "fivem:16924493",
+        "data": {}
+      },
+      "discord": {
+        "id": "989683272676159538",
+        "identifier": "discord:989683272676159538",
+        "data": {}
+      }
+    },
+    "permissions": [
+      "settings.view",
+      "settings.write",
+      "console.view",
+      "console.write",
+      "control.server",
+      "announcement",
+      "commands.resources",
+      "server.cfg.editor",
+      "txadmin.log.view",
+      "server.log.view",
+      "menu.vehicle",
+      "menu.clear_area",
+      "menu.viewids",
+      "players.direct_message",
+      "players.whitelist",
+      "players.warn",
+      "players.kick",
+      "players.ban",
+      "players.freeze",
+      "players.heal",
+      "players.playermode",
+      "players.spectate",
+      "players.teleport",
+      "players.troll"
+    ]
+  }
+]
