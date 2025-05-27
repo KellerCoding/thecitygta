@@ -1,4 +1,5 @@
 // CFX JS runtime
+/// <reference path="./natives_blank.d.ts" />
 /// <reference path="./natives_server.d.ts" />
 
 const EXT_FUNCREF = 10;
@@ -8,7 +9,6 @@ const EXT_LOCALFUNCREF = 11;
 	let boundaryIdx = 1;
 	let lastBoundaryStart = null;
 	const isDuplicityVersion = IsDuplicityVersion();
-	const currentResourceName = GetCurrentResourceName();
 
 	// temp
 	global.FormatStackTrace = function (args, argLength) {
@@ -69,17 +69,6 @@ const EXT_LOCALFUNCREF = 11;
 		return Citizen.canonicalizeRef(ref);
 	};
 
-	/**
-	 * @param {Function} refFunction
-	 * @returns {string|null} the function reference, or null if the refFunction that was passed wasn't a function
-	 */
-	Citizen.getRefFunction = (refFunction) => {
-		if (typeof refFunction !== "function") {
-			return null;
-		}
-		return Citizen.makeRefFunction(refFunction);
-	}
-
 	function refFunctionPacker(refFunction) {
 		const ref = Citizen.makeRefFunction(refFunction);
 
@@ -88,56 +77,20 @@ const EXT_LOCALFUNCREF = 11;
 
 	function refFunctionUnpacker(refSerialized) {
 		const fnRef = Citizen.makeFunctionReference(refSerialized);
-		const invoker = GetInvokingResource();
 
 		return function (...args) {
 			return runWithBoundaryEnd(() => {
-				let retvals = null;
-				try {
-					retvals = unpack(fnRef(pack(args)));
-				} catch (e) {
-				}
+				const retvals = unpack(fnRef(pack(args)));
 
 				if (retvals === null) {
-					let errorMessage = `Error in nested ref call for ${currentResourceName}. `
-					// invoker can be null, we don't want to give an even worse
-					// error by erroring here :P
-					if (invoker) {
-						errorMessage += `${currentResourceName} tried to call a function reference in ${invoker} but the reference wasn't valid. `
-						if (GetResourceState(invoker) !== "started") {
-							errorMessage += `And ${invoker} isn't started, was the resource restarted mid call?`
-						} else {
-							errorMessage += `(did ${invoker} restart recently?)`
-						}
-					}
-
-					throw new Error(errorMessage);
+					throw new Error('Error in nested ref call.');
 				}
 
 				switch (retvals.length) {
 					case 0:
 						return undefined;
 					case 1:
-						const rv = retvals[0];
-						if (rv && rv['__cfx_async_retval']) {
-							return new Promise((res, rej) => {
-								rv['__cfx_async_retval']((v, e) => {
-									if (e != null)
-										rej(e);
-									else {
-										switch(v.length) {
-											case 0:
-												res(undefined);
-											case 1:
-												res(v[0]);
-											default:
-												res(v);
-										}
-									}
-								});
-							});
-						}
-						return rv;
+						return retvals[0];
 					default:
 						return retvals;
 				}
@@ -145,8 +98,6 @@ const EXT_LOCALFUNCREF = 11;
 		};
 	}
 
-	const AsyncFunction = (async () => {}).constructor;
-	codec.addExtPacker(EXT_FUNCREF, AsyncFunction, refFunctionPacker);
 	codec.addExtPacker(EXT_FUNCREF, Function, refFunctionPacker);
 	codec.addExtUnpacker(EXT_FUNCREF, refFunctionUnpacker);
 	codec.addExtUnpacker(EXT_LOCALFUNCREF, refFunctionUnpacker);
@@ -181,28 +132,7 @@ const EXT_LOCALFUNCREF = 11;
 
 		try {
 			return runWithBoundaryStart(() => {
-				const rv = refFunctionsMap.get(ref).callback(...unpack(argsSerialized));
-				if (rv instanceof Promise) {
-					return pack([{'__cfx_async_retval': (cb) => {
-						rv.then(v => {
-							if (cb != null)
-								cb([v], null);
-						}).catch(err => {
-							if (cb != null) {
-								let msg = '';
-								if (err) {
-									if (err.message) {
-										msg = err.message.toString();
-									} else {
-										msg = err.toString();
-									}
-								}
-								cb(null, msg);
-							}
-						});
-					}}]);
-				}
-				return pack([rv]);
+				return pack([refFunctionsMap.get(ref).callback(...unpack(argsSerialized))]);
 			});
 		} catch (e) {
 			global.printError('call ref', e);
@@ -236,9 +166,6 @@ const EXT_LOCALFUNCREF = 11;
 	global.addRawEventListener = rawEmitter.on.bind(rawEmitter);
 	global.addRawEventHandler = global.addRawEventListener;
 
-	// Raw events configuration
-	global.setMaxRawEventListeners = rawEmitter.setMaxListeners.bind(rawEmitter);
-
 	// Client events
 	global.addEventListener = (name, callback, netSafe = false) => {
 		if (netSafe) {
@@ -250,9 +177,6 @@ const EXT_LOCALFUNCREF = 11;
 		emitter.on(name, callback);
 	};
 	global.on = global.addEventListener;
-
-	// Event Emitter configuration
-	global.setMaxEventListeners = emitter.setMaxListeners.bind(emitter);
 
 	// Net events
 	global.addNetEventListener = (name, callback) => global.addEventListener(name, callback, true);
@@ -291,21 +215,11 @@ const EXT_LOCALFUNCREF = 11;
 
 			TriggerLatentClientEventInternal(name, source, dataSerialized, dataSerialized.length, bps);
 		};
-
 		global.getPlayerIdentifiers = (player) => {
 			const numIds = GetNumPlayerIdentifiers(player);
 			let t = [];
 			for (let i = 0; i < numIds; i++) {
 				t[i] = GetPlayerIdentifier(player, i);
-			}
-			return t;
-		};
-
-		global.getPlayerTokens = (player) => {
-			const numIds = GetNumPlayerTokens(player);
-			let t = [];
-			for (let i = 0; i < numIds; i++) {
-				t[i] = GetPlayerToken(player, i);
 			}
 			return t;
 		};
@@ -321,11 +235,6 @@ const EXT_LOCALFUNCREF = 11;
 			return t;
 		};
 	} else {
-		global.SendNUIMessage = (data) => {
-			const dataJson = JSON.stringify(data)
-			SendNuiMessage(dataJson)
-		}
-
 		global.emitNet = (name, ...args) => {
 			const dataSerialized = pack(args);
 
@@ -421,7 +330,7 @@ const EXT_LOCALFUNCREF = 11;
 		const stackBlob = global.msgpack_pack(prepareStackTrace(e, parseStack(e.stack)));
 		const fst = global.FormatStackTrace(stackBlob, stackBlob.length);
 
-		if (fst !== null && fst !== undefined) {
+		if (fst) {
 			return '^1SCRIPT ERROR in ' + where + ': ' + e.toString() + "^7\n" + fst;
 		}
 
@@ -443,7 +352,7 @@ const EXT_LOCALFUNCREF = 11;
 
 	function processErrorQueue() {
 		for (const error of errorQueue) {
-			console.log(getError('promise (unhandled rejection)', error.error));
+			console.log(error.error);
 		}
 
 		errorQueue = [];
@@ -456,17 +365,13 @@ const EXT_LOCALFUNCREF = 11;
 			let error = '';
 
 			if (value instanceof Error) {
-				error = value;
+				error = getError('promise (unhandled)', value);
 			} else {
-				error = new Error((value || '').toString());
+				error = getError('promise (unhandled)', new Error((value || '').toString()));
 			}
-
-			// grab the stack early so it'll remain valid
-			const stack = error.stack;
 
 			errorQueue.push({
 				error,
-				stack,
 				promise
 			});
 
@@ -498,21 +403,10 @@ const EXT_LOCALFUNCREF = 11;
 				global.source = parseInt(source.substr(13));
 			}
 
-			// Running raw event listeners
-			try {
-				rawEmitter.emit(name, payloadSerialized, source);
-			} catch (e) {
-				console.error('Unhandled error during running raw event listeners', e);
-			}
-
-			const listeners = emitter.listeners(name);
-			if (listeners.length == 0) {
-				global.source = null;
-				return;
-			}
-
 			const payload = unpack(payloadSerialized) || [];
-			if(!Array.isArray(payload)) {
+			const listeners = emitter.listeners(name);
+
+			if (listeners.length === 0 || !Array.isArray(payload)) {
 				global.source = null;
 				return;
 			}
@@ -536,6 +430,13 @@ const EXT_LOCALFUNCREF = 11;
 				}
 			}
 
+			// Running raw event listeners
+			try {
+				rawEmitter.emit(name, payloadSerialized, source);
+			} catch (e) {
+				console.error('Unhandled error during running raw event listeners', e);
+			}
+
 			global.source = null;
 		});
 	});
@@ -545,15 +446,10 @@ const EXT_LOCALFUNCREF = 11;
 	const exportKey = isDuplicityVersion ? 'server_export' : 'export';
 	const eventType = isDuplicityVersion ? 'Server' : 'Client';
 
-	const getExportEventName = (resource, name) => {
-		if(resource == "txAdmin") {
-			resource = "monitor";
-		}
-		return `__cfx_export_${resource}_${name}`;
-	}
+	const getExportEventName = (resource, name) => `__cfx_export_${resource}_${name}`;
 
 	on(`on${eventType}ResourceStart`, (resource) => {
-		if (resource === currentResourceName) {
+		if (resource === GetCurrentResourceName()) {
 			const numMetaData = GetNumResourceMetadata(resource, exportKey) || 0;
 
 			for (let i = 0; i < numMetaData; i++) {
@@ -616,7 +512,7 @@ const EXT_LOCALFUNCREF = 11;
 
 				const [exportName, func] = args;
 
-				on(getExportEventName(currentResourceName, exportName), (setCB) => {
+				on(getExportEventName(GetCurrentResourceName(), exportName), (setCB) => {
 					setCB(func);
 				});
 			},
@@ -647,27 +543,17 @@ const EXT_LOCALFUNCREF = 11;
 
 			set(_, k, v) {
 				const payload = msgpack_pack(v);
-				SetStateBagValue(es, k, payload, payload.length, isDuplicityVersion);
-				return true; // If the set() method returns false, and the assignment happened in strict-mode code, a TypeError will be thrown.
+				return SetStateBagValue(es, k, payload, payload.length, isDuplicityVersion);
 			},
 		});
 	};
 
 	global.GlobalState = NewStateBag('global');
 
-	function getEntityStateBagId(entityGuid) {
-		if (isDuplicityVersion || NetworkGetEntityIsNetworked(entityGuid)) {
-			return `entity:${NetworkGetNetworkIdFromEntity(entityGuid)}`;
-		} else {
-			EnsureEntityStateBag(entityGuid);
-			return `localEntity:${entityGuid}`;
-		}
-	}
-
 	const entityTM = {
 		get(t, k) {
 			if (k === 'state') {
-				const es = getEntityStateBagId(t.__data);
+				const es = `entity:${NetworkGetNetworkIdFromEntity(t.__data)}`;
 
 				if (isDuplicityVersion) {
 					EnsureEntityStateBag(t.__data);
@@ -739,10 +625,6 @@ const EXT_LOCALFUNCREF = 11;
 
 		return ent;
 	};
-
-	if (!isDuplicityVersion) {
-		global.LocalPlayer = Player(-1);
-	}
 
 	/*
 	BEGIN

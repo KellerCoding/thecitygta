@@ -1,6 +1,5 @@
 [
   "net:base",
-  "net:packet",
   "net:tcp-server",
   "net:http-server",
   "citizen:server:net",
@@ -12,9 +11,6 @@
   "citizen:server:instance",
   "citizen:server:monitor",
   "citizen:server:impl",
-  "citizen:server:state:fivesv",
-  "citizen:server:state:rdr3sv",
-  "citizen:server:fxdk",
   "citizen:devtools",
   "citizen:resources:core",
   "citizen:resources:metadata:lua",
@@ -23,11 +19,8 @@
   "scripting:server",
   "svadhesive",
   "citizen:scripting:mono",
-  "citizen:scripting:mono-v2",
-  "citizen:scripting:v8node",
-  "citizen:scripting:node",
+  "citizen:scripting:v8",
   "voip-server:mumble",
   "http-client",
-  "pool-sizes-state",
   "citizen:server:gui"
 ]
