@@ -60,8 +60,6 @@ ensure [voice]
 ensure [defaultmaps]
 
 # Resources/Mods
-ensure trew_hud_ui
-start trew_hud_ui
 ensure int_weed
 
 ## Permissions ##
