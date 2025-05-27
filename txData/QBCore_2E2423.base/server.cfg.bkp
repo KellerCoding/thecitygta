@@ -60,8 +60,8 @@ ensure [voice]
 ensure [defaultmaps]
 
 # Resources/Mods
-ensure [trew_hud_ui-master]
-start [trew_hud_ui-master]
+ensure trew_hud_ui
+start trew_hud_ui
 
 ## Permissions ##
 add_ace group.admin command allow # allow all commands
