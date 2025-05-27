@@ -61,7 +61,7 @@ ensure [defaultmaps]
 
 # Resources/Mods
 ensure [trew_hud_ui-master]
-
+start [trew_hud_ui-master]
 
 ## Permissions ##
 add_ace group.admin command allow # allow all commands
