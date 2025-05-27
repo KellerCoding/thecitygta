@@ -63,6 +63,7 @@ ensure [defaultmaps]
 add_ace group.admin command allow # allow all commands
 add_principal identifier.fivem:16923466 group.admin #fuckthree6
 add_principal identifier.discord:558560902488784906 group.admin #fuckthree6
+add_principal identifier.fivem:16924493 group.admin #TheKingAdmin
 
 # Resources
 add_ace resource.qb-core command allow # Allow qb-core to execute commands
